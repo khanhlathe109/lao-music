@@ -6,8 +6,7 @@ import { ChevronRight, ChevronLeft } from '@mui/icons-material';
 import clsx from 'clsx';  
 import './ListSong.scss';
 import { useDispatch } from 'react-redux';
-import { setCurrentSong } from '../../../redux/slices/audioPlayerSlice';
-
+import { setPlaylist, setCurrentSong } from '../../../redux/slices/audioPlayerSlice'; 
 interface Song {
   id: string;
   image: string;
@@ -64,9 +63,10 @@ const ListSong: React.FC<ListSongProps> = ({ title, songs }) => {
     }
   }, []);
 
-  const handleClick = (song: Song) => {
-    dispatch(setCurrentSong(song));
-  };
+const handleClick = (song: Song) => {
+  dispatch(setPlaylist(songs));    
+  dispatch(setCurrentSong(song));     
+};
 
   return (
     <div className="list-song-section mb-8">

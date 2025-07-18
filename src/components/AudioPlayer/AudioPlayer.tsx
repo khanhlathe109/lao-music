@@ -1,15 +1,18 @@
 import React, { useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { IRootState } from '../../redux/store';
+import { playNext, playPrevious } from '../../redux/slices/audioPlayerSlice';
+import { SkipNext, SkipPrevious } from '@mui/icons-material';
 
 const AudioPlayer = () => {
+  const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { currentSong, isPlaying } = useSelector((state: RootState) => state.audioPlayer);
+  const { currentSong, isPlaying } = useSelector((state: IRootState) => state.audioPlayer);
 
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play();
+        audioRef.current.play().catch(() => {}); // avoid unhandled play() error
       } else {
         audioRef.current.pause();
       }
@@ -26,7 +29,17 @@ const AudioPlayer = () => {
           <div className="font-bold">{currentSong.title}</div>
           <div className="text-sm">{currentSong.artist}</div>
         </div>
-        <audio ref={audioRef} src={currentSong.src} controls className="ml-auto" />
+
+        {/* Nút chuyển bài */}
+        <div className="ml-auto flex items-center gap-2">
+          <button onClick={() => dispatch(playPrevious())}>
+            <SkipPrevious />
+          </button>
+          <audio ref={audioRef} src={currentSong.src} controls />
+          <button onClick={() => dispatch(playNext())}>
+            <SkipNext />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,39 +1,62 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Song {
   id: string;
+  image: string;
   title: string;
   artist?: string;
-  image: string;
-  src: string; // Đường dẫn file mp3
+  src: string;
 }
 
 interface AudioPlayerState {
   currentSong: Song | null;
   isPlaying: boolean;
+  playlist: Song[];
 }
 
 const initialState: AudioPlayerState = {
   currentSong: null,
   isPlaying: false,
+  playlist: [],
 };
 
 const audioPlayerSlice = createSlice({
-  name: "audioPlayer",
+  name: 'audioPlayer',
   initialState,
   reducers: {
-    setCurrentSong(state, action: PayloadAction<Song>) {
+    setCurrentSong: (state, action: PayloadAction<Song>) => {
       state.currentSong = action.payload;
       state.isPlaying = true;
     },
-    pause(state) {
-      state.isPlaying = false;
+    setPlaylist: (state, action: PayloadAction<Song[]>) => {
+      state.playlist = action.payload;
     },
-    play(state) {
-      state.isPlaying = true;
+    playNext: (state) => {
+      const currentIndex = state.playlist.findIndex(s => s.id === state.currentSong?.id);
+      if (currentIndex !== -1 && currentIndex < state.playlist.length - 1) {
+        state.currentSong = state.playlist[currentIndex + 1];
+        state.isPlaying = true;
+      }
+    },
+    playPrevious: (state) => {
+      const currentIndex = state.playlist.findIndex(s => s.id === state.currentSong?.id);
+      if (currentIndex > 0) {
+        state.currentSong = state.playlist[currentIndex - 1];
+        state.isPlaying = true;
+      }
+    },
+    togglePlayPause: (state) => {
+      state.isPlaying = !state.isPlaying;
     },
   },
 });
 
-export const { setCurrentSong, pause, play } = audioPlayerSlice.actions;
+export const {
+  setCurrentSong,
+  setPlaylist,
+  playNext,
+  playPrevious,
+  togglePlayPause,
+} = audioPlayerSlice.actions;
+
 export default audioPlayerSlice.reducer;
